@@ -2,7 +2,8 @@
 */
 
 div.menu
-{ position: fixed;
+{
+  position: fixed;
 }
 
 #search_form

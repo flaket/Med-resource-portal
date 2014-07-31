@@ -50,6 +50,7 @@
 
 
 :- http_handler(api(ac_find_literal), ac_find_literal, []).
+:- http_handler(api(search), ac_find_literal, []).
 
 /** <module> Simple literal search
 */
@@ -68,10 +69,10 @@
 %	  is implemented by search_filter/2.
 %	  * select_handler(+HandlerID)
 %	  ID of the handler called if the user selects a completion. The
-%	  handler is called with q=<Selected>
+%	  handler is called with query=<Selected>
 %	  * submit_handler(+HandlerID)
 %	  ID of the handler called if the user submits using the button.
-%	  The handler is called with q=<Typed>
+%	  The handler is called with query=<Typed>
 %	  * label(Label)
 %	  Label of the search-button.  Default is _Search_.
 %	  * value(Value)
@@ -90,7 +91,7 @@ simple_search_form(Options) -->
 	html(form([ id(search_form),
 		    action(location_by_id(Search))
 		  ],
-		  [ div([ \search_box([ name(q) | Options ]),
+		  [ div([ \search_box([ name(query) | Options ]),
 			  \filter(Options),
 			  \select_handler(Options),
 			  input([ type(submit),
@@ -120,7 +121,7 @@ search_box(Options) -->
 	autocomplete(ac_find_literal,
 		     [ query_delay(0.2),
 		       auto_highlight(false),
-		       max_results_displayed(Max),
+		       max_results(Max),
 		       width('30ex')
 		     | Options
 		     ]).
@@ -170,7 +171,7 @@ autocomplete(Handler, Options) -->
 %%	expand_value(ValueIn, Value)
 %
 %	Allow for e.g., p(q) to use   the  value from the HTTP-parameter
-%	=q=.
+%	=query=.
 
 expand_value(p(Name), Value) :- !,
 	(   http_current_request(Request),
@@ -185,8 +186,8 @@ expand_value(Value, Value).
 highlight -->
 	html(script(type('text/javascript'),
 \[
-  'function highlighMatches(str, query, cls)\n',
-  '{ var pat = new RegExp(query, "gi");
+  'function highlighMatches(str, q, cls)\n',
+  '{ var pat = new RegExp(q, "gi");
      var sa = str.split(pat);
      var ma = str.match(pat);
      var i;
@@ -263,7 +264,7 @@ ac_find_literal(Request) :-
 	max_results_displayed(DefMax),
 	http_parameters(Request,
 			[ query(Query,
-				[ description('Prefix for literals to find')
+				[description('Prefix for literals to find')
 				]),
 			  filter(FilterAtom,
 				 [ optional(true),
@@ -273,7 +274,7 @@ ac_find_literal(Request) :-
 				  [ default(list_triples_with_literal),
 				    description('Callback handler on selection')
 				  ]),
-			  maxResultsDisplayed(Max,
+			  max_results(Max,
 					      [ integer, default(DefMax),
 						description('Maximum number of results displayed')
 					      ])
@@ -284,7 +285,7 @@ ac_find_literal(Request) :-
 	    rdf_global_term(Filter0, Filter)
 	),
 	autocompletions(Query, Filter, Handler, Max, Count, Completions),
-	reply_json(json([ query = json([ count=Count
+	reply_json(json([ q = json([ count=Count
 				       ]),
 			  results = Completions
 			])).
@@ -316,7 +317,7 @@ obj_result(Handler, Text-Count,
 	object_href(Handler, Text, Href).
 
 object_href(Handler, Text, Link) :- !,
-	http_link_to_id(Handler, [ q=Text ], Link).
+	http_link_to_id(Handler, [ query=Text ], Link).
 
 first_n(0, _, []) :- !.
 first_n(_, [], []) :- !.

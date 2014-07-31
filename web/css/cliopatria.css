@@ -3,6 +3,7 @@
 
 .cliopatria .content
 { margin-top: 10px;
+
 }
 
 .cliopatria address.footer
@@ -57,23 +58,40 @@ option.change
 }
 
 .cliopatria h1
-{ font-size: 140%;
-  background-color: #b9daff;
+{ font:normal normal 130% Georgia, serif;
 }
 
 .cliopatria h2
-{ font-size: 130%;
-  background-color: #b9daff;
+{ font:normal normal 120% Georgia, serif;
 }
 
 .cliopatria h3
-{ font-size: 110%;
-  background-color: #b9daff;
+{ font:normal normal 110% Georgia, serif;
 }
 
 .cliopatria h4
-{ font-size: 100%;
-  background-color: #b9daff;
+{ font:normal normal 100% Georgia, serif;
+}
+
+div.api
+{ font:normal normal 95% Georgia, serif;
+  background-color: #f0f0f0;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #c7c7c7;
+  padding: 5px;
+}
+
+div.code
+{
+  background-color: #F9F9F9;
+  border: 1px dashed #2F6FAB;
+  color: black;
+  line-height: 1.1em;
+  padding: 1em;
+}
+.cliopatria p
+{ font:normal normal 95% Georgia, serif;
 }
 
 .cliopatria dl

@@ -28,7 +28,7 @@
 #nav li { /* Appearance settings (eye candy) */
 	position: relative;
 	background: url("../icons/menu-bg.png") left top;
-	color: #00F;
+	color: #197519;
 	border: solid 1px #AAA;
 	height: auto;
 	max-width: 12em;
@@ -79,7 +79,6 @@
 
 #nav li:hover {
 	background: url("../icons/menu-bg-highlight.png") left top;
-	color: #F00;
 }
 #nav > li ul {
 /*	background: #666;*/

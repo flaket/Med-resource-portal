@@ -44,3 +44,5 @@ pengine_rpc/3.
 @see http://www.swi-prolog.org/pldoc/package/pengines.html
 */
 
+sandbox:safe_primitive(rdf_db:rdf(_,_,_)).
+

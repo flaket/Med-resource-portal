@@ -38,7 +38,8 @@
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/http_json)).
 
-:- http_handler(json(describe), json_describe, []).
+:- http_handler(api(json), json_describe, []).
+:- http_handler(api(resources), json_describe, []).
 
 /* <module> Describe resources in JSON
 
@@ -70,12 +71,9 @@ json_describe(Request) :-
 			      [ %oneof([cbd, scdb, ifcbd, lcbd, hcbd]),
 				oneof([cbd]),
 				default(cbd),
-				description('Algorithm that determines \
-					     the description')
+				description('Algorithm that determines the description')
 			      ])
 			]),
 	resource_CBD(rdf, URI, Graph),
 	graph_json(Graph, JSON),
 	reply_json(JSON).
-
-

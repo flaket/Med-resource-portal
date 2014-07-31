@@ -19,10 +19,11 @@ add a declaration like this:
 		     ]).
     ==
 */
-
+/*
 :- html_resource(cliopatria,
 		 [ virtual(true),
 		   requires([ css('fix_menu.css')
 			    ])
 		 ]).
 
+*/

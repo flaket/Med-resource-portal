@@ -22,7 +22,7 @@ _object_.
 */
 
 % Use this if the URIs resolve directly to this server
-%:- http_handler('/rdf/', lod_api, [prefix]).
+:- http_handler(api(rdf), lod_api([]), [prefix]).
 
 % Use this if the URIs are redirected to this server.
 %:- http_handler('/purl/rdf/',

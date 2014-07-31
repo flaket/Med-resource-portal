@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+  <head>
+    <title>RPC</title>
+  </head>
+<body>
+<h1>Remote Procedure Calls</h1>
+
+<ul>
+	<li><a href="#intro">Introduction</a>
+	<li><a href="#terminal">Testing it out from the terminal</a>
+	<li><a href="#prolog">Connecting your Prolog program</a>
+	<li><a href="#javascript">Connecting your Javascript program</a>
+	<li><a href="#resources">Resources</a>
+</ul>
+
+<a id="intro"></a>	
+<h2>Introduction</h2>
+<p>Introductory text rpcorama</p>
+
+<a id="terminal"></a>	
+<h2>Testing it out from the terminal</h2>
+<p>
+Having installed SWI-Prolog 7 and added the executable to the path, we can start up SWI-Prolog with: </p>
+<code>swipl</code> <br>
+<p>We load the pengines module, and call the predicate pengine_rpc/2, with the server location and predicate to execute as the parameters.</p>
+<code>?- use_module(library(pengines)).<br>
+?- pengine_rpc('http://localhost:3020',rdf(X,Y,Z)). <br></code>
+<p>Prolog uses pattern matching to find the first occurence of an rdf triple with subject, predicate and object mapped to X, Y, and Z respectively. The server replies with:</p>
+<code>X = 'http://purl.org/dc/terms/hasPart', <br>
+Y = 'http://www.w3.org/2000/01/rdf-schema#label', <br>
+Z = literal(lang('en-US', 'Has Part'))</code>
+<p>Pressing semi-colon (Prolog operator "or") gives the next matching result. Pressing period ends the RPC.</p>
+
+<a id="prolog"></a>	
+<h2>From your Prolog program</h2>
+<p>
+</p>
+
+<a id="javascript"></a>	
+<h2>From your Javascript program</h2>
+<p>
+</p>
+
+<a id="resources"></a>	
+<h2>Resources</h2>
+<p>
+Texttstat some more resources. <br>
+<a href="http://www.swi-prolog.org/pldoc/man?section=semweb-rdf-db">RDF-db library documentation</a> <br>
+<a href="http://www.swi-prolog.org/pldoc/man?section=rdfs">RDFS library documentation</a> <br>
+<a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> <br>
+<a href="http://www.swi-prolog.org/pldoc/package/pengines.html">Pengines documentation</a> <br>
+</p>
+
+
+</body>
+</html>

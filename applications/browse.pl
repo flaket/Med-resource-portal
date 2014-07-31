@@ -1819,7 +1819,7 @@ p_label(type_count(G),
 
 search(Request) :-
 	http_parameters(Request,
-			[ q(QueryText,
+			[ query(QueryText,
 			    [ description('Query to search for')
 			    ]),
 			  filter(FilterAtom,

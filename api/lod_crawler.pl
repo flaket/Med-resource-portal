@@ -39,6 +39,7 @@
 :- use_module(user(user_db)).
 
 :- http_handler(api(lod_crawl), lod_crawl, []).
+:- http_handler(api(crawl), lod_crawl, []).
 
 %%	lod_crawl(+Request)
 %

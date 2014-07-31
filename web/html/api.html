@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+  <head>
+    <title>API</title>
+  </head>
+<body>
+<h1>API</h1>
+
+<p>This is the detailed API documentation. Services listed here are meant for machine-to-machine communication. See <a href="http://localhost:3020/help/http">/help/http</a> for automated documentation of all HTTP-available functionality. If you want to take full advantage of the underlying Prolog reasoner you should check out the section on <a href="http://localhost:3020/rpc">remote-procedure-calls</a>.
+<br>*Configure SSL, then: All API access is over HTTPS, and accessed at /api/ .</p>
+
+<ul>
+	<li><a href="#search">Simple literal search</a>
+	<li><a href="#resources">Resource description</a>
+	<li><a href="#sparql">SPARQL</a>
+	<li><a href="#export_graph">Export graph</a>
+	<li><a href="#export_graph_schema">Export graph schema</a>
+	<li><a href="#crawl_lod">Crawl LOD</a>
+</ul>
+
+<a id="search"></a>	
+<h2>Simple literal search</h2>
+<div class=api>GET /api/search</div>
+<p>Replies with a JSON object with all results of the literal query. The parameter "query" is needed. The following example returns a JSON object with all results starting with "ac":</p>
+<div class=api>GET /api/search?query=ac</div>
+<p>Beware that this may be a large object with many elements. Consider using parameter "max_results":</p>
+<div class=api>GET /api/search?query=ac&amp;max_results=5</div>
+<p>Response, with header:</p>
+<code>
+HTTP/1.1 200 OK<br>
+Date: Tue, 29 Jul 2014 11:27:27 GMT<br>
+Connection: Keep-Alive<br>
+Content-Type: application/json; charset=UTF-8<br>
+Content-Length: 19336<br>
+{ "query": {"count":2711}, "results": [ { "label":"ACETIAMINE", "count":1, "href":"/browse/list_triples_with_literal?q=ACETIAMINE" }, { "label":"ACETIAMINE / Aspirin Oral Tablet", "count":1, "href":"/browse/list_triples_with_literal?q=ACETIAMINE%20/%20Aspirin%20Oral%20Tablet" }, { "label":"ACETIAMINE 50 MG / Aspirin 350 MG Oral Tablet", "count":1, "href":"/browse/list_triples_with_literal?q=ACETIAMINE%2050%20MG%20/%20Aspirin%20350%20MG%20Oral%20Tablet" }, { "label":"ACETIC", "count":1, "href":"/browse/list_triples_with_literal?q=ACETIC" }, { "label":"ACETIC / Hydrocortisone Otic Solution", "count":1, "href":"/browse/list_triples_with_literal?q=ACETIC%20/%20Hydrocortisone%20Otic%20Solution" } ] }</code>
+
+<p>We can see that there were 2711 occurences of "ac" in the database, but only five results were returned. Also note that the href's returned are relative paths. Other parameters are "filter", which filters on raw matches (a Prolog term), and "handler" which is a callback handler on selection.  This call is used for the search form on this site. The form uses a YUI autocomplete widget where the api-calls are made after a small time delay as the user enters characters in the search field.</p><br>
+
+<a id="resources"></a>	
+<h2>Resource description</h2>
+<div class=api>GET /api/resources</div>
+<p>Describes a single resource using a JSON serialization. The parameter "r" is required.</p>
+<div class=api>GET /api/resources?r=http://purl.obolibrary.org/obo/CHEBI_36838</div>
+<p>Response, with header:</p>
+<code>
+HTTP/1.1 200 OK<br>
+Date: Tue, 29 Jul 2014 11:30:25 GMT<br>
+Connection: Keep-Alive<br>
+Content-Type: application/json; charset=UTF-8<br>
+Content-Length: 883<br>
+{ "http://purl.obolibrary.org/obo/CHEBI_36838": { "http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym": [ { "value":"17-hydroxy steroids", "type":"literal", "datatype":"http://www.w3.org/2001/XMLSchema#string" } ], "http://www.geneontology.org/formats/oboInOwl#id": [ { "value":"CHEBI:36838", "type":"literal", "datatype":"http://www.w3.org/2001/XMLSchema#string" } ], "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": [ {"value":"http://www.w3.org/2002/07/owl#Class", "type":"uri"} ], "http://www.w3.org/2000/01/rdf-schema#label": [ { "value":"17-hydroxy steroid", "type":"literal", "datatype":"http://www.w3.org/2001/XMLSchema#string" } ], "http://www.w3.org/2000/01/rdf-schema#subClassOf": [ { "value":"http://purl.obolibrary.org/obo/CHEBI_35350", "type":"uri" } ] } }</code><br>
+
+<a id="sparql"></a>	
+<h2>SPARQL</h2>
+<div class=api>GET /api/sparql</div>
+<p>Handles SPARQL queries. Parameter "query" is needed to hold the SPARQL query to be executed.</p>
+<div class=api>GET /api/sparql?query=SELECT * WHERE { ?sub ?pred ?obj } LIMIT 10</div>
+<p>Parameter "format" can be used to set the result format. Available options are "rdf+xml", "json", "application/sparql-results+xml", "application/sparql-results+json". If format is not set the HTTP accept header is used as a default.
+<div class=api>GET /api/sparql?query=SELECT * WHERE { ?sub ?pred ?obj } LIMIT 1 &amp;format=json</div>
+<p>Response:</p>
+<code> { "head": {"vars": ["sub", "obj", "pred" ]}, "results": { "bindings": [ { "sub": { "type":"uri", "value":"http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym" }, "obj": { "type":"uri", "value":"http://www.w3.org/2002/07/owl#AnnotationProperty" }, "pred": { "type":"uri", "value":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type" } } ] } } 
+</code><br>
+
+<a id="export_graph"></a>	
+<h2>Export graph</h2>
+<div class=api>GET /api/export_graph</div>
+<p>Exports a named graph in a given serialization. Parameter "graph" is the name of the graph, and is required. To get different serializations you can use the optional parameter "format", which can be set to "turtle", "canonical_turtle" or "rdfxml". "turtle" is the default formatting. The MIME-type to use can also be set with "mimetype". You can find the name of the graphs of the database by browsing the menu or visiting /browse/list_graphs. Using this API-call dumps the entire graph. Keep in mind that some graphs can contain millions of triples. This next example call exports a large chunk of the DrOn ontology and contains 2,2 million triples.</p>
+<div class=api>GET /api/export_graph?graph=dron-ndc</div><br>
+
+<a id="export_graph_schema"></a>	
+<h2>Export graph schema</h2>
+<div class=api>GET /api/export_graph_schema</div>
+<p>Computes and replies with the schema from the actual data in a graph. Parameter "graph" is the name of the graph, and is required. Optional parameters are: "format", which can be set to "turtle", "canonical_turtle" or "rdfxml". "turtle" is the default formatting. The MIME-type to use can also be set with "mimetype".</p><br>
+
+<a id="crawl_lod"></a>	
+<h2>Crawl LOD</h2>
+<div class=api>GET /api/crawl</div>
+<p>Start crawling linked open data. Parameter "r" sets the starting resource URI of the crawl. Optional parameter "return_to" sets the URI to return to. This can be used if you come across an unknown predicate or value. Point the crawler at this URI and it will crawl the linked open data and import the appropriate ontology to describe the resource.</p>
+<div class=api>GET /api/crawl?r=http://www.w3.org/1999/02/22-rdf-syntax-ns#type</div>
+<br>
+
+
+
+</body>
+</html>

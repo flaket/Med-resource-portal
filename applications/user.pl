@@ -89,12 +89,14 @@ in:
     ==
 */
 
-:- http_handler(root('.'),			     root,
+:- http_handler(root(.), root, []).
+:- http_handler(cliopatria(welcome), welcome,
 		[ priority(-100) ]).
-:- http_handler(cliopatria(home),		     home,
+:- http_handler(cliopatria(cliopatria), home,
 		[ priority(-100) ]).
-:- http_handler(cliopatria(admin),		     home,
+:- http_handler(cliopatria(admin), home,
 		[ id(admin) ]).
+
 :- http_handler(cliopatria('user/statistics'),	     statistics,	      []).
 :- http_handler(cliopatria('user/query'),	     query_form,	      []).
 :- http_handler(cliopatria('user/loadFile'),	     load_file_form,	      []).
@@ -103,14 +105,20 @@ in:
 :- http_handler(cliopatria('user/clearRepository'),  clear_repository_form,   []).
 :- http_handler(cliopatria('user/removeStatements'), remove_statements_form,  []).
 
-
 %%	root(+Request)
 %
-%	Default ClioPatria handler for /.  The default handler redirects
-%	to id=home, unless the use-info is not initialised. in that case
-%	it redirects to id=create_admin.
+%	Default ClioPatria handler for /.
 
 root(Request) :-
+    reply_decorated_file(html('home.html'), Request).
+
+
+%%	welcome(+Request)
+%
+%	Redirects to id=home, unless the use-info is not initialised.
+%    In that case it redirects to id=create_admin.
+
+welcome(Request) :-
 	(   current_user(_)
 	->  http_redirect(moved_temporary,
 			  location_by_id(home),
@@ -120,11 +128,9 @@ root(Request) :-
 			  Request)
 	).
 
-
 %%	home(+Request)
 %
-%	Reply with the normal  welcome  page.   The  welcome  page  is a
-%	decorated version of html('welcome.html').
+%
 
 home(Request) :-
 	reply_decorated_file(html('welcome.html'), Request).
