@@ -17,17 +17,18 @@
 
 <a id="intro"></a>	
 <h2>Introduction</h2>
-<p>Introductory text rpcorama</p>
+<p>Introductory text rpcorama, using the pengines module.
+</p>
 
 <a id="terminal"></a>	
 <h2>Testing it out from the terminal</h2>
 <p>
 Having installed SWI-Prolog 7 and added the executable to the path, we can start up SWI-Prolog with: </p>
 <code>swipl</code> <br>
-<p>We load the pengines module, and call the predicate pengine_rpc/2, with the server location and predicate to execute as the parameters.</p>
+<p>We load the pengines module, and call the predicate pengine_rpc/2, with the server-location and predicate-to-execute as the parameters.</p>
 <code>?- use_module(library(pengines)).<br>
 ?- pengine_rpc('http://localhost:3020',rdf(X,Y,Z)). <br></code>
-<p>Prolog uses pattern matching to find the first occurence of an rdf triple with subject, predicate and object mapped to X, Y, and Z respectively. The server replies with:</p>
+<p>Prolog uses pattern matching to find the first occurence of an rdf triple with subject, predicate and object mapped to X, Y, and Z respectively. For this query the server replies with:</p>
 <code>X = 'http://purl.org/dc/terms/hasPart', <br>
 Y = 'http://www.w3.org/2000/01/rdf-schema#label', <br>
 Z = literal(lang('en-US', 'Has Part'))</code>
@@ -36,9 +37,14 @@ Z = literal(lang('en-US', 'Has Part'))</code>
 <a id="prolog"></a>	
 <h2>From your Prolog program</h2>
 <p>
-</p>
+As in the "Testing it out from the terminal" example your module needs to load the pengines library module, and when you want to call the server you use the predicate pengine_rpc/2. As the developer you can add predicates that combine your application logic with the rdf/3 RPC call. You can then transform the resulting data into a suitable format for your application. <br>
+Here's a simple query for the Object "Acidose", mapping the resulting subject and predicate to variables S and P: </p>
+<code>pengine_rpc('http://localhost:3020',rdf(S,P,literal('Acidose'))).</code>
+<p>Result:</p>
+<code>S = 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#E872', <br>
+P = 'http://www.w3.org/2000/01/rdf-schema#label'.</code>
 
-<a id="javascript"></a>	
+<a id="javascript"></a>
 <h2>From your Javascript program</h2>
 <p>
 </p>
@@ -47,10 +53,12 @@ Z = literal(lang('en-US', 'Has Part'))</code>
 <h2>Resources</h2>
 <p>
 Texttstat some more resources. <br>
-<a href="http://www.swi-prolog.org/pldoc/man?section=semweb-rdf-db">RDF-db library documentation</a> <br>
-<a href="http://www.swi-prolog.org/pldoc/man?section=rdfs">RDFS library documentation</a> <br>
+<a href="http://www.swi-prolog.org/pldoc/doc_for?object=rdf/3">rdf/3 documentation</a> <br>
 <a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> <br>
 <a href="http://www.swi-prolog.org/pldoc/package/pengines.html">Pengines documentation</a> <br>
+<a href="http://www.swi-prolog.org/pldoc/man?section=semweb-rdf-db">RDF-db library documentation</a> <br>
+<a href="http://www.swi-prolog.org/pldoc/man?section=rdfs">RDFS library documentation</a> <br>
+
 </p>
 
 

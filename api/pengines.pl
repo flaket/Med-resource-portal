@@ -30,9 +30,10 @@
 
 :- module(cliopatria_pengines, []).
 :- use_module(library(pengines), []).
-:- use_module(pengine_sandbox:library(semweb/rdf_db)).
-:- use_module(pengine_sandbox:library(semweb/rdfs)).
+%:- use_module(pengine_sandbox:library(semweb/rdf_db)).
+%:- use_module(pengine_sandbox:library(semweb/rdfs)).
 :- use_module(library(sandbox), []).
+:- use_module(cliopatria(entailment/rdf)).
 
 /** <module> Provide pengines Prolog and JavaScript API
 
@@ -44,5 +45,5 @@ pengine_rpc/3.
 @see http://www.swi-prolog.org/pldoc/package/pengines.html
 */
 
-sandbox:safe_primitive(rdf_db:rdf(_,_,_)).
+sandbox:safe_primitive(rdf_entailment:rdf(_,_,_)).
 
