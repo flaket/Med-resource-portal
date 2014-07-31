@@ -43,6 +43,13 @@ Here's a simple query for the Object "Acidose", mapping the resulting subject an
 <p>Result:</p>
 <code>S = 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#E872', <br>
 P = 'http://www.w3.org/2000/01/rdf-schema#label'.</code>
+<p>For literal queries you can check out the options in the <a href=http://www.swi-prolog.org/pldoc/man?section=semweb-query>rdf/3 documentation</a>. For example, finding any object containing the substring "then", binding the object to a variable O:</p>
+<code>pengine_rpc('http://localhost:3020',rdf(_,_,literal(substring('then'), O))).</code>
+<p>Result:</p>
+<code>O = type('http://www.w3.org/2001/XMLSchema#string', pantothenate)
+</code>
+<p>talk about implementing the </p>
+
 
 <a id="javascript"></a>
 <h2>From your Javascript program</h2>
@@ -54,8 +61,9 @@ P = 'http://www.w3.org/2000/01/rdf-schema#label'.</code>
 <p>
 Texttstat some more resources. <br>
 <a href="http://www.swi-prolog.org/pldoc/doc_for?object=rdf/3">rdf/3 documentation</a> <br>
+<a href="http://pengines.swi-prolog.org/docs/documentation.html">Pengines Javascript api documentation</a> <br>
+<a href="http://www.swi-prolog.org/pldoc/man?section=pengine-libs">Pengines Prolog api documentation</a> <br>
 <a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> <br>
-<a href="http://www.swi-prolog.org/pldoc/package/pengines.html">Pengines documentation</a> <br>
 <a href="http://www.swi-prolog.org/pldoc/man?section=semweb-rdf-db">RDF-db library documentation</a> <br>
 <a href="http://www.swi-prolog.org/pldoc/man?section=rdfs">RDFS library documentation</a> <br>
 
