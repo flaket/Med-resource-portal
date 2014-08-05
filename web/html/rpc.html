@@ -38,7 +38,7 @@ Here's a simple query for the Object "Acidose", mapping the resulting subject an
 <p>Result:</p>
 <code>S = 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#E872', <br>
 P = 'http://www.w3.org/2000/01/rdf-schema#label'.</code>
-<p>For literal queries such as the one above you can check out the available options in the <a href=http://www.swi-prolog.org/pldoc/man?section=semweb-query>rdf/3 documentation</a>. Here's a simple example, finding any object containing the substring "then", binding the object to a variable O (and by using the underscore syntax, "_", we tell Prolog that we don't care about the subject and predicate results):</p>
+<p>For literal queries such as the one above you can check out the available options in the <a href="http://www.swi-prolog.org/pldoc/man?section=semweb-query">rdf/3 documentation</a>. Here's a simple example, finding any object containing the substring "then", binding the object to a variable O (and by using the underscore syntax, "_", we tell Prolog that we don't care about the subject and predicate results):</p>
 <code>?- pengine_rpc('http://localhost:3020',rdf(_,_,literal(substring('then'), O))).</code>
 <p>Result:</p>
 <code>O = type('http://www.w3.org/2001/XMLSchema#string', pantothenate)
@@ -60,7 +60,6 @@ example1
 
 <a id="resources"></a>	
 <h2>Resources</h2>
-<p>
 <ul>
 	<li><a href="http://www.swi-prolog.org/pldoc/doc_for?object=rdf/3">rdf/3 documentation</a> <br>
 	<li><a href="http://pengines.swi-prolog.org/docs/documentation.html">Pengines Javascript api documentation</a> <br>
@@ -69,8 +68,6 @@ example1
 	<li><a href="http://www.swi-prolog.org/pldoc/man?section=semweb-rdf-db">RDF-db library documentation</a> <br>
 	<li><a href="http://www.swi-prolog.org/pldoc/man?section=rdfs">RDFS library documentation</a> <br>
 </ul>
-</p>
-
 
 </body>
 </html>
