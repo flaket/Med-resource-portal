@@ -17,10 +17,10 @@
 
 <a id="intro"></a>	
 <h2>Introduction</h2>
-<p>Introductory text rpcorama, using the pengines module.
+<p>A powerful way to interact with the database is to do a remote procedure call (RPC) to the Prolog predicate rdf/3 on the server. This is realized through the library module "Pengines". The RPC can be done from the terminal or through your program written in Prolog or Javascript. Additionally, SWI-Prolog has interfaces to several other popular languages, including Java, C# and C++. This means that your C++-application can have a Prolog-module that in turn uses RPC through the Pengines module. Even if your application ends up only using simple searches or SPARQL queries through the API, the examples on this page might be helpful, as both rdf/3 and SPARQL queries uses the triplet notation.
 </p>
 
-<a id="terminal"></a>	
+<a id="terminal"></a>
 <h2>Testing it out from the terminal</h2>
 <p>
 Having installed SWI-Prolog 7 and added the executable to the path, we can start up SWI-Prolog with: </p>
@@ -38,7 +38,7 @@ Here's a simple query for the Object "Acidose", mapping the resulting subject an
 <p>Result:</p>
 <code>S = 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#E872', <br>
 P = 'http://www.w3.org/2000/01/rdf-schema#label'.</code>
-<p>For literal queries such as the one above you can check out the available options in the <a href="http://www.swi-prolog.org/pldoc/man?section=semweb-query">rdf/3 documentation</a>. Here's a simple example, finding any object containing the substring "then", binding the object to a variable O (and by using the underscore syntax, "_", we tell Prolog that we don't care about the subject and predicate results):</p>
+<p>For literal queries such as the one above you can check out the available options in the <a href="http://www.swi-prolog.org/pldoc/man?section=semweb-query">rdf/3 documentation</a>. Notice also that there is a rdf/4 predicate, where you can specify the graph you wish to query. Sometimes you might only want data from a specific graph. This next example finds the first object containing the substring "then", binding the object to a variable O (and by using the underscore syntax, "_", we tell Prolog that we don't care about the subject and predicate results):</p>
 <code>?- pengine_rpc('http://localhost:3020',rdf(_,_,literal(substring('then'), O))).</code>
 <p>Result:</p>
 <code>O = type('http://www.w3.org/2001/XMLSchema#string', pantothenate)
@@ -46,22 +46,30 @@ P = 'http://www.w3.org/2000/01/rdf-schema#label'.</code>
 <a id="prolog"></a>	
 <h2>RPC from your Prolog program</h2>
 <p>
-From your own Prolog program it's as easy as calling pengine_rpc/2. As was the case in the "Testing it out from the terminal" example, your module needs to load the pengines library module. When you want to call the server you use the predicate pengine_rpc/2. As the developer you can add predicates that combine your application logic with the rdf/3 RPC call. You can then transform the resulting data into a suitable format for your application. <br>
-Go check out the <a href="http://www.swi-prolog.org/pldoc/man?section=pengine-libs">pengines Prolog api documentation</a>. Hopefully, the following examples will provide some additional insight. 
-example1
-</p>
+There are a few examples of usage in the beginning of the <a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> at the SWI-Prolog website. From your own Prolog program it's as easy as calling pengine_rpc/2. As was the case in the "Testing it out from the terminal" example, your module needs to load the pengines library module. When you want to call the server you use the predicate pengine_rpc/2. As the developer you can add predicates that combine your application logic with the rdf/3 RPC call. You can then transform the resulting data into a suitable format for your application. <br>
+You can check out the <a href="http://www.swi-prolog.org/pldoc/man?section=pengine-libs">pengines Prolog api documentation</a>, but most of this functionality is for implementing the prolog pengine on the server side. Hopefully, the following examples will provide some additional insight.<p>
+<h3>Example 1</h3>
+<p>The pattern matching powers of Prolog are especially useful in retrieving the wanted information from the database. This next example finds all triplets where the subject has some of the properties of an "Interaction" class in the "fest"-graph, and contains information regarding "paracetamol" and "etanol". This would be one of several ways of finding interaction information between paracetamol and etanol.</p>
+<code>use_module(library(pengines)).<br>
+pengine_rpc('http://localhost:3030',rdf(I,_,literal(substring('paracetamol'), _))),<br>
+pengine_rpc('http://localhost:3030',rdf(I,_,literal(substring('etanol'), _))),<br>
+pengine_rpc('http://localhost:3030',rdf(I,interaksjonsmekanisme,Interaksjonsmekanisme)),<br>
+pengine_rpc('http://localhost:3030',rdf(I,kliniskKonsekvens,Konsekvens)),<br>
+pengine_rpc('http://localhost:3030',rdf(I,relevans,Relevans)),<br>
+pengine_rpc('http://localhost:3030',rdf(I,handtering,Handtering)).</code>
+<p>We can now use the values of the different variables (the Capitalized terms). Perhaps we want to do some string manipulation, search for specific terms, or maybe our application produces a warning if the database matches our query, as it did in this case. This would certainly be a useful application where users would be warned about potential interactions between substances.</p>
 
 <a id="javascript"></a>
 <h2>RPC from your Javascript program</h2>
 <p>
-	First of all you might check out the sparse <a href="http://pengines.swi-prolog.org/docs/documentation.html">pengines Javascript api documentation</a>. Below are some simple examples.
-	example1
+	There are a few examples of usage in the <a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> at the SWI-Prolog website. You can also check out the sparse <a href="http://pengines.swi-prolog.org/docs/documentation.html">pengines Javascript api documentation</a>.
 </p>
 
 <a id="resources"></a>	
 <h2>Resources</h2>
 <ul>
 	<li><a href="http://www.swi-prolog.org/pldoc/doc_for?object=rdf/3">rdf/3 documentation</a> <br>
+	<li><a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> <br>
 	<li><a href="http://pengines.swi-prolog.org/docs/documentation.html">Pengines Javascript api documentation</a> <br>
 	<li><a href="http://www.swi-prolog.org/pldoc/man?section=pengine-libs">Pengines Prolog api documentation</a> <br>
 	<li><a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> <br>
