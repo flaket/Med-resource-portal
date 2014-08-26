@@ -17,7 +17,7 @@
 
 <a id="intro"></a>	
 <h2>Introduction</h2>
-<p>A powerful way to interact with the database is to do a remote procedure call (RPC) to the Prolog predicate rdf/3 on the server. This is realized through the library module "Pengines". The RPC can be done from the terminal or through your program written in Prolog or Javascript. Additionally, SWI-Prolog has interfaces to several other popular languages, including Java, C# and C++. This means that your C++-application can have a Prolog-module that in turn uses RPC through the Pengines module. Even if your application ends up only using simple searches or SPARQL queries through the API, the examples on this page might be helpful, as both rdf/3 and SPARQL queries uses the triplet notation.
+<p>A powerful way to interact with the database is to do a remote procedure call (RPC) to the Prolog predicate <a href="http://www.swi-prolog.org/pldoc/man?section=semweb-query">rdf/3</a> on the server. This is realized through the library module "Pengines". The RPC can be done from the terminal or through your program written in Prolog or Javascript. Additionally, SWI-Prolog has interfaces to several other popular languages, including Java, C# and C++. This means that your C++-application can have a Prolog-module that in turn uses RPC through the Pengines module. Even if your application ends up only using simple searches or SPARQL queries through the API, the examples on this page might be helpful, as both rdf/3 and SPARQL queries uses the triplet notation. In addition to the rdf/3 predicate you may want to use <a href="http://www.swi-prolog.org/pldoc/man?predicate=rdf_find_literals%2f2">rdf_find_literals/2</a>, a search function utilizing natural language processing. 
 </p>
 
 <a id="terminal"></a>
@@ -69,6 +69,7 @@ pengine_rpc('http://localhost:3030',rdf(I,handtering,Handtering)).</code>
 <h2>Resources</h2>
 <ul>
 	<li><a href="http://www.swi-prolog.org/pldoc/doc_for?object=rdf/3">rdf/3 documentation</a> <br>
+	<li><a href="http://www.swi-prolog.org/pldoc/man?predicate=rdf_find_literals%2f2">rdf_find_literals/2 documentation</a> <br>
 	<li><a href="http://www.swi-prolog.org/pengines/">Pengines tutorial</a> <br>
 	<li><a href="http://pengines.swi-prolog.org/docs/documentation.html">Pengines Javascript api documentation</a> <br>
 	<li><a href="http://www.swi-prolog.org/pldoc/man?section=pengine-libs">Pengines Prolog api documentation</a> <br>

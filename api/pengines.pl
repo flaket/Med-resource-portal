@@ -34,6 +34,7 @@
 %:- use_module(pengine_sandbox:library(semweb/rdfs)).
 :- use_module(library(sandbox), []).
 :- use_module(cliopatria(entailment/rdf)).
+:- use_module(library(semweb/rdf_litindex)).
 
 /** <module> Provide pengines Prolog and JavaScript API
 
@@ -46,4 +47,5 @@ pengine_rpc/3.
 */
 
 sandbox:safe_primitive(rdf_entailment:rdf(_,_,_)).
+sandbox:safe_primitive(rdf_litindex:rdf_find_literals(_,_)).
 
