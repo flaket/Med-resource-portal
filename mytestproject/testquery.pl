@@ -1,8 +1,7 @@
 :- module(test_query,
     [
-        find_unique_interactions/1,
         interaksjoner/5,
-        legemiddelmerkevare/3,
+        legemiddelmerkevare/5,
         legemiddelvirkestoff/3,
         legemiddeldose/3,
         legemiddelpakning/3,
@@ -29,16 +28,16 @@
 query_form(_Request) :-
     reply_html_page(cliopatria(default),
     title('Specify a query'),
-    [\query_form([])
+    [\query_form
     ]).
 
-query_form(Options) -->
+query_form -->
     html([ form([ class(query),
     name(query),
     action(evaluate_query),
     method('GET')],
         [
-        h3([ 'Query']),
+        h3([ 'Medication Helper']),
             table([ class(query)],
                 [
                     tr([ td(colspan(5),
@@ -63,86 +62,195 @@ evaluate_query(Request) :-
                     [ query(Q, [optional(true)])
                     ]),
     reply_html_page(cliopatria(default),
-    title('Results'),
-    [h1(['Results: ', Q])]
+    title('Resultater'),
+    [h1(['Resultater for spørring: ', Q]),
+        h3('Relevante stikkord: '),
+        \stikkord(Q),
+        h3('Interaksjoner: '),
+        \interaksjoner(Q),
+        h3('Legemiddelmerkevarer: '),
+        \merkevarer(Q),
+        h3('LegemiddelVirkestoffer: '),
+        \legevirkestoff(Q),
+        h3('LegemiddelDoser: '),
+        \dose(Q),
+        h3('LegemiddelPakninger: '),
+        \pakning(Q),
+        h3('Handelsvarer: '),
+        \handelsvare(Q),
+        h3('Virkestoffer: '),
+        \virkestoffz(Q)
+    ]
     ).
 
-query_results -->
-    html([h1(['Hullo'])]).
+merkevarer(Q) -->
+    { setof([Navn,ATC,Preparatomtale,Produktinfo],legemiddelmerkevare(Q,ATC,Navn,Preparatomtale,Produktinfo),LegemiddelBag)},
+    html([ table([ class(block)
+        ],
+        [ tr([
+            th('Navn'),
+            th('ATC'),
+            th('Preparatomtale'),
+            th('Produktinfo')
+        ])
+        | \list_legemiddelmerkevarer(LegemiddelBag)
+        ])
+    ]).
 
-% Get results from list.
+list_legemiddelmerkevarer([]) -->
+    [].
+list_legemiddelmerkevarer([X|LegemiddelBag]) -->
+    {takeout(VAL1,X,Y)},
+    {takeout(VAL2,Y,Z)},
+    {takeout(VAL3,Z,VAL4)},
+    html(tr([
+            td(VAL1),
+            td(VAL2),
+            td(a(href(encode(VAL3)), literal(VAL3))),
+            td(VAL4)
+    ])),
+    list_legemiddelmerkevarer(LegemiddelBag).
+
+interaksjoner(Q) -->
+    {setof([Interaksjonsmekanisme,' ',Konsekvens,' ',Relevans,' ',Handtering],interaksjoner(Q,Interaksjonsmekanisme,Konsekvens,Relevans,Handtering),InteraksjonerBag)},
+    html([ table([ class(block)],
+        [ \list_interaksjoner(InteraksjonerBag) ])
+    ]).
+
+list_interaksjoner([]) -->
+    [].
+list_interaksjoner([X|InteraksjonerBag]) -->
+    html(tr([ td(X)])),
+    list_interaksjoner(InteraksjonerBag).
+
+legevirkestoff(Q) -->
+    { setof([ATC,' ',Navn],legemiddelvirkestoff(Q,ATC,Navn),VirkestoffBag)},
+    html([ table([ class(block)],
+        [ \list_legemiddelvirkestoff(VirkestoffBag) ])
+    ]).
+
+list_legemiddelvirkestoff([]) -->
+    [].
+list_legemiddelvirkestoff([X|VirkestoffBag]) -->
+    html(tr([ td(X)])),
+    list_legemiddelvirkestoff(VirkestoffBag).
+
+dose(Q) -->
+    { setof([ATC,' ',Navn],legemiddeldose(Q,ATC,Navn),DoseBag)},
+    html([ table([ class(block)],
+        [ \list_legemiddeldose(DoseBag) ])
+    ]).
+
+list_legemiddeldose([]) -->
+    [].
+list_legemiddeldose([X|DoseBag]) -->
+    html(tr([ td(X)])),
+    list_legemiddeldose(DoseBag).
+
+pakning(Q) -->
+    { setof([ATC,' ',Navn],legemiddelpakning(Q,ATC,Navn),PakningBag)},
+    html([ table([ class(block)],
+        [ \list_legemiddelpakning(PakningBag) ])
+    ]).
+
+list_legemiddelpakning([]) -->
+    [].
+list_legemiddelpakning([X|PakningBag]) -->
+    html(tr([ td(X)])),
+    list_legemiddelpakning(PakningBag).
+
+handelsvare(Q) -->
+    { setof([Navn],medforbmatr(Q,Navn,Adr,LNavn,Tlf),HandelsBag)},
+    html([ table([ class(block)],
+        [ \list_handelsvare(HandelsBag) ])
+    ]).
+
+list_handelsvare([]) -->
+    [].
+list_handelsvare([X|HandelsBag]) -->
+    html(tr([ td(X)])),
+    list_handelsvare(HandelsBag).
+
+virkestoffz(Q) -->
+    { setof([Navn,' ',VAL],virkestoff(Q,Navn,VAL),VirkeBag)},
+    html([ table([ class(block)],
+        [ \list_virkestoff(VirkeBag) ])
+    ]).
+
+list_virkestoff([]) -->
+    [].
+list_virkestoff([X|VirkeBag]) -->
+    html(tr([ td(X)])),
+    list_virkestoff(VirkeBag).
+
+stikkord(Q) -->
+    {setof([Synonyms,', '],synonymer(Q,Synonyms),SynonymBag)},
+    html([
+        \list_stikkord(SynonymBag)
+    ]).
+
+list_stikkord([]) -->
+    [].
+list_stikkord([X|SynonymBag]) -->
+    html(tr([ td(X)])),
+    list_stikkord(SynonymBag).
+
 takeout(X,[X|R],R).
 takeout(X,[F|R],[F|S]) :- takeout(X,R,S).
 
-find_unique_interactions(X) :-
-    read(Input),
-    setof(
-        [Interaksjonsmekanisme,Konsekvens,Relevans,Handtering],
-        interaksjoner(Input,Interaksjonsmekanisme,Konsekvens,Relevans,Handtering),
-        Result),
-    takeout(X,Result,_).
-
 interaksjoner(Input,Interaksjonsmekanisme,Konsekvens,Relevans,Handtering) :-
-    takeout(Substance_1,Input,R),
-    takeout(Substance_2,R,_),
+    %takeout(Substance_1,Input,R),
+    %takeout(Substance_2,R,_),
     rdf(_,interaksjon,I,fest),
-    rdf(I,_,literal(substring(Substance_1),_),fest),
-    rdf(I,_,literal(substring(Substance_2),_),fest),
-    rdf(I,interaksjonsmekanisme,Interaksjonsmekanisme,fest),
-    rdf(I,kliniskKonsekvens,Konsekvens,fest),
-    rdf(I,relevans,Relevans,fest),
-    rdf(I,handtering,Handtering,fest).
+    rdf(I,_,literal(substring(Input),_),fest),
+    %rdf(I,_,literal(substring(Substance_2),_),fest),
+    rdf(I,interaksjonsmekanisme,literal(Interaksjonsmekanisme),fest),
+    rdf(I,kliniskKonsekvens,literal(Konsekvens),fest),
+    rdf(I,relevans,literal(Relevans),fest),
+    rdf(I,handtering,literal(Handtering),fest).
 
-legemiddelmerkevare(Input,ATC,Navn) :-
-    takeout(Substance,Input,_),
+legemiddelmerkevare(Input,ATC,Navn,Preparatomtale,Produktinfo) :-
     rdf(_,legemiddelMerkevare,L,fest),
-    rdf(L,_,literal(substring(Substance),_),festv),
+    rdf(L,_,literal(substring(Input),_),fest),
     rdf(L,atc,ATC,fest),
-    rdf(L,navnFormStyrke,Navn,fest).
+    rdf(L,navnFormStyrke,Navn,fest),
+    rdf(L,preparatomtaleavsnitt,literal(Preparatomtale)),
+    rdf(L,produktInfo,Produktinfo).
 
 legemiddelvirkestoff(Input,ATC,Navn) :-
-    takeout(Substance,Input,_),
     rdf(_,legemiddelVirkestoff,L,fest),
-    rdf(L,_,literal(substring(Substance),_),fest),
+    rdf(L,_,literal(substring(Input),_),fest),
     rdf(L,atc,ATC,fest),
     rdf(L,navnFormStyrke,Navn,fest).
 
 legemiddeldose(Input,ATC,Navn) :-
-    takeout(Substance,Input,_),
     rdf(_,legemiddeldose,L,fest),
-    rdf(L,_,literal(substring(Substance),_),fest),
+    rdf(L,_,literal(substring(Input),_),fest),
     rdf(L,atc,ATC,fest),
     rdf(L,navnFormStyrke,Navn,fest).
 
 legemiddelpakning(Input,ATC,Navn) :-
-    takeout(Substance,Input,_),
     rdf(_,legemiddelpakning,L,fest),
-    rdf(L,_,literal(substring(Substance),_),fest),
+    rdf(L,_,literal(substring(Input),_),fest),
     rdf(L,atc,ATC,fest),
     rdf(L,navnFormStyrke,Navn,fest).
 
 medforbmatr(Input,Navn,Adr,LNavn,Tlf) :-
-    takeout(Substance,Input,_),
     rdf(_,medForbMatr,L,fest),
-    rdf(L,_,literal(substring(Substance),_),fest),
-    rdf(L,navn,Navn,fest),
-    rdf(L,leverandor,LEV,fest);(
-        rdf(LEV,adresse,Adr,fest),
-        rdf(LEV,navn,LNavn,fest),
-        rdf(LEV,tlf,Tlf,fest))
-    .
+    rdf(L,_,literal(substring(Input),_),fest),
+    rdf(L,navn,literal(Navn),fest).
+    %rdf(L,leverandor,LEV,fest),
+    %rdf(LEV,adresse,Adr,fest),
+    %rdf(LEV,navn,LNavn,fest),
+    %rdf(LEV,tlf,Tlf,fest).
 
 virkestoff(Input,Navn,VAL) :-
-    takeout(Substance,Input,_),
-    rdf(_,virkestoff,V,fest),
-    rdf(V,_,literal(substring(Substance),_),fest),
-    rdf(V,navn,Navn,fest),
-    rdf(A,_,literal(substring(Substance),_),atc),
-    rdf(A,rdfs:seeAlso,VAL).
+    rdf(A,_,literal(substring(Input),_),atc),
+    rdf(A,rdfs:label,literal(Navn),atc),
+    rdf(A,rdfs:seeAlso,literal(VAL),atc).
 
 synonymer(Input,Synonyms) :-
-    takeout(X,Input,_),
-    rdf(L,_,literal(substring(X),_),icd10no),
-    rdf(L, 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#synonym', Synonyms).
+    rdf(L,_,literal(substring(Input),_),icd10no),
+    rdf(L, 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#synonym', literal(Synonyms)).
 
 %["root","api/resources?r=http://www.legemiddelverket.no/Legemiddelsoek%23",ATC_code]
