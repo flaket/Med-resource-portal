@@ -62,6 +62,7 @@ evaluate_query(Request) :-
                     ]),
     split_string(Query, ",", " ", L),
     findall(Xs,permutation(Xs,L),PermutationBag),
+    directory_files('/Users/andreas/Documents/Sommerjobb_2014/Datakilder/NLH/NLH-html-20130925-01/output/', Files),
     reply_html_page(cliopatria(default),
     title('Resultater'),
     [h1(['Resultater for spørring: ', Query]),
@@ -80,7 +81,9 @@ evaluate_query(Request) :-
         h3('Handelsvarer: '),
         \handelsvare(L),
         h3('Virkestoffer: '),
-        \virkestoff(L)
+        \virkestoff(L),
+        h3('NLH kapitler: '),
+        \nlh(L, Files)
     ]
     ).
 
@@ -375,6 +378,41 @@ list_stikkord([X|SynonymBag]) -->
     ])),
     list_stikkord(SynonymBag).
 
+nlh([], _Files) -->
+    [].
+nlh([X|L], Files) -->
+    html([ table([ class(block)
+    ],
+    [ tr([
+        th('Kapittel'),
+        th('Similarity score'),
+        th('Funn')
+    ])
+    | \do_file(Files, X) ])
+    ]),
+    nlh(L, Files).
+
+do_file([], _X) -->
+[].
+do_file([File|Files], X) -->
+    {string_concat('/Users/andreas/Documents/Sommerjobb_2014/Datakilder/NLH/NLH-html-20130925-01/output/',File,PathToTextFile)},
+    (({sub_string(PathToTextFile,_,_,_,'.txt')})
+    ->
+    {
+    read_file_to_string(PathToTextFile, TextString, []),
+    isub(TextString, X, true, Similarity)},
+        (({Similarity > 0.3})
+        -> html(tr([
+            td(File),
+            td(Similarity),
+            td('..utdrag av teksten..')
+        ])),
+        do_file(Files, X)
+        ; do_file(Files, X))
+    ; do_file(Files, X)).
+
+   %sub_string(TextString,_,_,_,X),
+
 interaksjoner(Q1,Q2,Hit1,Hit2,Interaksjonsmekanisme,Konsekvens,Relevans,Handtering) :-
     rdf(_,interaksjon,I,fest),
     % Følgende søker i de to substansgruppene som interaksjonen omtaler.
@@ -471,11 +509,4 @@ synonymer(Input,Navn,Synonyms) :-
     rdf(L,rdfs:label,Navn),
     rdf(L, 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#synonym', literal(Synonyms)).
 
-%/Users/andreas/Documents/Sommerjobb_2014/Datakilder/NLH/NLH-html-20130925-01/output/T3.6.2 Hypokalsemi.txt
-
-% last inn alle tekstfiler og kalkuler similarityscore for alle filer mot querystreng
-% returner de N beste filene
-%Path_trunk = "/Users/andreas/Documents/Sommerjobb_2014/Datakilder/NLH/NLH-html-20130925-01/output/"
-
-load_file_and_calculate_similarity(PathToTextFile, TextString, Query, Similarity) :- read_file_to_string(PathToTextFile, TextString, []), isub(TextString, Query, true, Similarity).
 
