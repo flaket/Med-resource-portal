@@ -401,7 +401,7 @@ do_file([File|Files], X) -->
     {
     read_file_to_string(PathToTextFile, TextString, []),
     isub(TextString, X, true, Similarity)},
-        (({Similarity > 0.3})
+        (({Similarity > 0.5})
         -> html(tr([
             td(File),
             td(Similarity),
