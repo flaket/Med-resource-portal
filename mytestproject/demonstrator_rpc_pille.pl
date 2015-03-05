@@ -1,4 +1,4 @@
-:- module(test_query,
+:- module(demonstrator,
     [
 
     ]).
@@ -16,6 +16,7 @@
 :- use_module(cliopatria(components/basics)).
 :- use_module(library(readutil)).
 :- use_module(library(isub)).
+:- use_module(library(pengines)).
 
 :- http_handler(cliopatria('demonstrator'), query_form, []).
 :- http_handler(cliopatria('evaluate_query'), evaluate_query, []).
@@ -411,102 +412,123 @@ do_file([File|Files], X) -->
         ; do_file(Files, X))
     ; do_file(Files, X)).
 
-   %sub_string(TextString,_,_,_,X),
-
 interaksjoner(Q1,Q2,Hit1,Hit2,Interaksjonsmekanisme,Konsekvens,Relevans,Handtering) :-
-    rdf(_,interaksjon,I,fest),
-    % Følgende søker i de to substansgruppene som interaksjonen omtaler.
-    ((rdf(I,substansgruppe,S,fest),
-    rdf(I,substansgruppe,S2,fest),
-    dif(S,S2),
-    rdf(S,_,literal(substring(Q1),Hit1),fest),
-    rdf(S2,_,literal(substring(Q2),Hit2),fest))
-    -> true
-    % Følgende søker etter substringer av søkeparameteret i teksten til interaksjonoppføringen.
-    ;
-    Q1 == Q2,
-    rdf(I,_,literal(substring(Q1),_),fest),
-    Hit1 = Q1, Hit2 = Q2
-    ),
-    rdf(I,interaksjonsmekanisme,literal(Interaksjonsmekanisme),fest),
-    rdf(I,kliniskKonsekvens,literal(Konsekvens),fest),
-    rdf(I,relevans,literal(Relevans),fest),
-    rdf(I,handtering,literal(Handtering),fest).
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(_,interaksjon,I,fest),
+        % Følgende søker i de to substansgruppene som interaksjonen omtaler.
+        ((rdf(I,substansgruppe,S,fest),
+        rdf(I,substansgruppe,S2,fest),
+        dif(S,S2),
+        rdf(S,_,literal(substring(Q1),Hit1),fest),
+        rdf(S2,_,literal(substring(Q2),Hit2),fest))
+        -> true
+        % Følgende søker etter substringer av søkeparameteret i teksten til interaksjonoppføringen.
+        ;
+        Q1 == Q2,
+        rdf(I,_,literal(substring(Q1),_),fest),
+        Hit1 = Q1, Hit2 = Q2
+        ),
+        rdf(I,interaksjonsmekanisme,literal(Interaksjonsmekanisme),fest),
+        rdf(I,kliniskKonsekvens,literal(Konsekvens),fest),
+        rdf(I,relevans,literal(Relevans),fest),
+        rdf(I,handtering,literal(Handtering),fest)
+        )
+    ).
 
 legemiddelmerkevare(Input,ATC,Navn,Preparatomtale,Produktinfo,AdminVei,EnhetDosering,Bruk) :-
-    rdf(_,legemiddelMerkevare,L,fest),
-    rdf(L,_,literal(substring(Input),_),fest),
-    rdf(L,atc,ATC,fest),
-    rdf(L,navnFormStyrke,Navn,fest),
-    rdf(L,preparatomtaleavsnitt,literal(Preparatomtale)),
-    rdf(L,produktInfo,Produktinfo),
-    rdf(L,administreringLegemiddel,A),
-    rdf(A,administrasjonsvei,AdminVei),
-    rdf(A,enhetDosering,EnhetDosering),
-    (
-    (rdf(A,bruksomradeEtikett,Bruk))
-    -> true
-    ; Bruk = "ukjent"
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(_,legemiddelMerkevare,L,fest),
+        rdf(L,_,literal(substring(Input),_),fest),
+        rdf(L,atc,ATC,fest),
+        rdf(L,navnFormStyrke,Navn,fest),
+        rdf(L,preparatomtaleavsnitt,literal(Preparatomtale)),
+        rdf(L,produktInfo,Produktinfo),
+        rdf(L,administreringLegemiddel,A),
+        rdf(A,administrasjonsvei,AdminVei),
+        rdf(A,enhetDosering,EnhetDosering),
+        (
+        (rdf(A,bruksomradeEtikett,Bruk))
+        -> true
+        ; Bruk = "ukjent"
+        )
+        )
     ).
 
 legemiddelvirkestoff(Input,Navn,ATC,Reseptgruppe,Adminvei,Enhetdosering,Kortdose) :-
-    rdf(_,legemiddelVirkestoff,L,fest),
-    rdf(L,_,literal(substring(Input),_),fest),
-    rdf(L,atc,ATC,fest),
-    rdf(L,navnFormStyrke,Navn,fest),
-    rdf(L,reseptgruppe,Reseptgruppe),
-    rdf(L,administreringLegemiddel,A),
-    rdf(A,administrasjonsvei,Adminvei),
-    rdf(A,enhetDosering,Enhetdosering),
-    (
-    (rdf(A,kortdose,Kortdose))
-    -> true
-    ; Kortdose = "ukjent"
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(_,legemiddelVirkestoff,L,fest),
+        rdf(L,_,literal(substring(Input),_),fest),
+        rdf(L,atc,ATC,fest),
+        rdf(L,navnFormStyrke,Navn,fest),
+        rdf(L,reseptgruppe,Reseptgruppe),
+        rdf(L,administreringLegemiddel,A),
+        rdf(A,administrasjonsvei,Adminvei),
+        rdf(A,enhetDosering,Enhetdosering),
+        (
+        (rdf(A,kortdose,Kortdose))
+        -> true
+        ; Kortdose = "ukjent"
+        )
+        )
     ).
 
 legemiddeldose(Input,Navn,ATC,Preparattype,Reseptgruppe) :-
-    rdf(_,legemiddeldose,L,fest),
-    rdf(L,_,literal(substring(Input),_),fest),
-    rdf(L,atc,ATC,fest),
-    rdf(L,navnFormStyrke,Navn,fest),
-    rdf(L,preparattype,Preparattype,fest),
-    rdf(L,reseptgruppe,Reseptgruppe,fest).
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(_, legemiddeldose, L, fest),
+        rdf(L,_,literal(substring(Input),_),fest),
+        rdf(L,atc,ATC,fest),
+        rdf(L,navnFormStyrke,Navn,fest),
+        rdf(L,preparattype,Preparattype,fest),
+        rdf(L,reseptgruppe,Reseptgruppe,fest)
+    )).
 
 legemiddelpakning(Input,Navn,ATC,Pakningstype,Mengde,Enhetpakning,Omtale) :-
-    rdf(_,legemiddelpakning,L,fest),
-    rdf(L,_,literal(substring(Input),_),fest),
-    rdf(L,atc,ATC,fest),
-    rdf(L,navnFormStyrke,Navn,fest),
-    rdf(L,pakningsinfo,P,fest),
-    rdf(P,pakningstype,Pakningstype,fest),
-    rdf(P,mengde,Mengde,fest),
-    rdf(P,enhetPakning,Enhetpakning,fest),
-    ((rdf(L,preparatomtaleavsnitt,Omtale))
-    -> true
-    ; Omtale = "ukjent"
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(_,legemiddelpakning,L,fest),
+        rdf(L,_,literal(substring(Input),_),fest),
+        rdf(L,atc,ATC,fest),
+        rdf(L,navnFormStyrke,Navn,fest),
+        rdf(L,pakningsinfo,P,fest),
+        rdf(P,pakningstype,Pakningstype,fest),
+        rdf(P,mengde,Mengde,fest),
+        rdf(P,enhetPakning,Enhetpakning,fest),
+        ((rdf(L,preparatomtaleavsnitt,Omtale))
+        -> true
+        ; Omtale = "ukjent"
+        )
+        )
     ).
 
 medforbmatr(Input,Navn,LNavn,Adr,Tlf,Pr,Str,Produktnr) :-
-    rdf(_,medForbMatr,L,fest),
-    rdf(L,_,literal(substring(Input),_),fest),
-    rdf(L,navn,Navn,fest),
-    rdf(L,leverandor,LEV,fest),
-    rdf(LEV,adresse,Adr,fest),
-    rdf(LEV,navn,LNavn,fest),
-    rdf(LEV,telefon,Tlf,fest),
-    rdf(L,produktInfoVare,P),
-    rdf(P,antPerPakning,Pr),
-    rdf(P,enhetStorrelse,Str),
-    rdf(P,produktNr,Produktnr).
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(_,medForbMatr,L,fest),
+        rdf(L,_,literal(substring(Input),_),fest),
+        rdf(L,navn,Navn,fest),
+        rdf(L,leverandor,LEV,fest),
+        rdf(LEV,adresse,Adr,fest),
+        rdf(LEV,navn,LNavn,fest),
+        rdf(LEV,telefon,Tlf,fest),
+        rdf(L,produktInfoVare,P),
+        rdf(P,antPerPakning,Pr),
+        rdf(P,enhetStorrelse,Str),
+        rdf(P,produktNr,Produktnr)
+        )
+    ).
 
 drugbank(Input,Navn,Lenke) :-
-    rdf(A,_,literal(substring(Input),_),atc),
-    rdf(A,rdfs:label,Navn,atc),
-    rdf(A,rdfs:seeAlso,Lenke,atc).
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(A,_,literal(substring(Input),_),atc),
+        rdf(A,rdfs:label,Navn,atc),
+        rdf(A,rdfs:seeAlso,Lenke,atc)
+        )
+    ).
 
 synonymer(Input,Navn,Synonyms) :-
-    rdf(L,_,literal(substring(Input),_),icd10no),
-    rdf(L,rdfs:label,Navn),
-    rdf(L, 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#synonym', literal(Synonyms)).
+    pengine_rpc('http://pille.idi.ntnu.no', (
+        rdf(L,_,literal(substring(Input),_),icd10no),
+        rdf(L,rdfs:label,Navn),
+        rdf(L, 'http://research.idi.ntnu.no/hilab/ehr/ontologies/icd10no.owl#synonym', literal(Synonyms))
+        )
+    ).
 
 
